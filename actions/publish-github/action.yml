@@ -1,0 +1,22 @@
+name: Publish GitHub Release
+description: Stage a GitHub release
+inputs:
+  github-pat:
+    type: string
+    required: true
+    description: PAT used to authenticate with GitHub when working across repos
+runs:
+  using: "composite"
+  steps:
+    - name: Stage GitHub release
+      shell: bash
+      run: |
+        gh release create "${BUILD_TAG}" --draft --title "Version ${BUILD_VERSION}" \
+            $([ -f "dist/releaseNotes.md" ] && echo "--notes-file dist/releaseNotes.md" || echo "") \
+            $([ -f "dist/MOEAFramework-${BUILD_VERSION}.tar.gz" ] && echo "dist/MOEAFramework-${BUILD_VERSION}.tar.gz" || echo "") \
+            $([ -f "dist/MOEAFramework-${BUILD_VERSION}-Demo.jar" ] && echo "dist/MOEAFramework-${BUILD_VERSION}-Demo.jar" || echo "") \
+            $([ -f "dist/MOEAFramework-${BUILD_VERSION}-Source.tar.gz" ] && echo "dist/MOEAFramework-${BUILD_VERSION}-Source.tar.gz" || echo "") \
+            $([ -f "target/${BUILD_ARTIFACT}.jar" ] && echo "target/${BUILD_ARTIFACT}.jar" || echo "") \
+            $([ -f "target/${BUILD_ARTIFACT}-jar-with-dependencies.jar" ] && echo "target/${BUILD_ARTIFACT}-jar-with-dependencies.jar" || echo "")
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-pat }}
