@@ -11,7 +11,7 @@ runs:
     - name: Stage GitHub release
       shell: bash
       run: |
-        gh release create "${BUILD_TAG}" --draft --title "Version ${BUILD_VERSION}" \
+        gh release create "v${BUILD_VERSION}" --draft --title "Version ${BUILD_VERSION}" \
             $([ -f "dist/releaseNotes.md" ] && echo "--notes-file dist/releaseNotes.md" || echo "") \
             $([ -f "dist/MOEAFramework-${BUILD_VERSION}.tar.gz" ] && echo "dist/MOEAFramework-${BUILD_VERSION}.tar.gz" || echo "") \
             $([ -f "dist/MOEAFramework-${BUILD_VERSION}-Demo.jar" ] && echo "dist/MOEAFramework-${BUILD_VERSION}-Demo.jar" || echo "") \
