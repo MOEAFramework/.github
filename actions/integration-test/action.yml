@@ -1,0 +1,30 @@
+name: Trigger Integration Tests
+description: Creates a PR in the IntegrationTests repo to run tests
+inputs:
+  github-pat:
+    type: string
+    required: true
+    description: PAT used to authenticate with GitHub (requires cross-repo PAT)
+runs:
+  using: "composite"
+  steps:
+    - name: Trigger integration tests
+      shell: bash
+      run: |
+        pushd ..
+        gh repo clone MOEAFramework/IntegrationTests
+        pushd IntegrationTests
+        git checkout ${BUILD_ARTIFACT} || git checkout -b ${BUILD_ARTIFACT}
+          
+        xmlstarlet edit --inplace -N x="http://maven.apache.org/POM/4.0.0" --update "//x:project/x:dependencies/x:dependency[x:artifactId=${BUILD_NAME}]/x:version" --value "${BUILD_VERSION}" pom.xml
+
+        git add .
+          
+        if [[ -n "$(git status -s)" ]]; then
+          git commit -m "Update for ${BUILD_ARTIFACT}"
+          git push origin ${BUILD_ARTIFACT}
+          gh pr create --head ${BUILD_ARTIFACT} --fill --repo MOEAFramework/IntegrationTests || true
+        fi
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-pat }}
+        
