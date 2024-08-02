@@ -25,6 +25,6 @@ runs:
           git push origin ${BUILD_ARTIFACT}
           gh pr create --head ${BUILD_ARTIFACT} --fill --repo MOEAFramework/IntegrationTests || true
         fi
-      #env:
-      #  GITHUB_TOKEN: ${{ inputs.github-pat }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-pat }}
         
