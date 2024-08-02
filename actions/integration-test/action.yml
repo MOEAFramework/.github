@@ -16,7 +16,7 @@ runs:
         pushd IntegrationTests
         git checkout ${BUILD_ARTIFACT} || git checkout -b ${BUILD_ARTIFACT}
           
-        xmlstarlet edit --inplace -N x="http://maven.apache.org/POM/4.0.0" --update "//x:project/x:dependencies/x:dependency[x:artifactId=${BUILD_NAME}]/x:version" --value "${BUILD_VERSION}" pom.xml
+        xmlstarlet edit --inplace -N x="http://maven.apache.org/POM/4.0.0" --update "//x:project/x:dependencies/x:dependency[x:artifactId='${BUILD_NAME}']/x:version" --value "${BUILD_VERSION}" pom.xml
 
         git add .
           
