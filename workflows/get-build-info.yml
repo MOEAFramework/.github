@@ -1,0 +1,67 @@
+name: Get Project Build Info
+
+on:
+  workflow_call:
+    inputs:
+      skip_validation:
+        description: 'Skip version validations'
+        default: false
+        type: boolean
+
+jobs:
+  get-project-info:
+    name: Get Project Build Info
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install required software
+        run: |
+          sudo apt install xmlstarlet
+      - name: Get project info
+        run: |
+          if [ -f META-INF/build.properties ]; then
+              BUILD_NAME=$(cat META-INF/build.properties | awk '{split($0,a," = "); if (a[1]=="shortname") print tolower(a[2])}' |  tr -d '[:space:]')
+              BUILD_VERSION=$(cat META-INF/build.properties | awk '{split($0,a," = "); if (a[1]=="version") print tolower(a[2])}' |  tr -d '[:space:]')
+          elif [ -f pom.xml ]; then
+              BUILD_NAME=$(xmlstarlet sel -N x="http://maven.apache.org/POM/4.0.0" -t -v "//x:project/x:artifactId/text()" pom.xml)
+              BUILD_VERSION=$(xmlstarlet sel -N x="http://maven.apache.org/POM/4.0.0" -t -v "//x:project/x:version/text()" pom.xml)
+          fi
+          
+          [ -n "${BUILD_NAME}" ] || (>&2 echo "Failed to detect BUILD_NAME"; exit -1)
+          [ -n "${BUILD_VERSION}" ] || (>&2 echo "Failed to detect BUILD_VERSION"; exit -1)
+          BUILD_YEAR=$(date +%Y)
+          BUILD_ARTIFACT="${BUILD_NAME}-${BUILD_VERSION}"
+        
+          echo "BUILD_NAME=${BUILD_NAME}" >> $GITHUB_ENV
+          echo "BUILD_VERSION=${BUILD_VERSION}" >> $GITHUB_ENV
+          echo "BUILD_YEAR=${BUILD_YEAR}" >> $GITHUB_ENV
+          echo "BUILD_ARTIFACT=${BUILD_ARTIFACT}" >> $GITHUB_ENV
+      - name: Validate project info
+        if: ${{ ! inputs.skip_validation }}
+        run: |
+          echo "${BUILD_VERSION}" | grep -E '^[0-9]+\.[0-9]+(\.[0-9]+)?$' || (>&2 echo "Invalid version number format, found ${BUILD_VERSION}"; exit -1)
+
+          find . -name "*.md" -print0 | while read -d $'\0' file
+          do
+              MAVEN_DEPENDENCY="$(grep -oPisz '(?s)<dependency>.*</dependency>' ${file} | tr -d '\0')"
+              if [ -n "${MAVEN_DEPENDENCY}" ]; then
+                  MAVEN_VERSION=$(echo "${MAVEN_DEPENDENCY}" | xmlstarlet sel -t -v "//dependency/version")
+                  [ "${BUILD_VERSION}" == "${MAVEN_VERSION}" ] || (>&2 echo "${file}: Incorrect version in dependency, found ${MAVEN_VERSION} but expected ${BUILD_VERSION}"; exit -1)
+              fi
+          
+              MAVEN_URL_VERSION="$(grep -oEis 'https://search.maven.org/.*/[0-9]+\.[0-9]+(\.[0-9]+)?/' ${file} | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?')"
+              [ -z "${MAVEN_URL_VERSION}" ] || [ "${BUILD_VERSION}" == "${MAVEN_URL_VERSION}" ] || (>&2 echo "${file}: Incorrect version in url, found ${MAVEN_URL_VERSION} but expected ${BUILD_VERSION}"; exit -1)
+          
+              CITATION="$(grep -Eis '\(Version [0-9]+\.[0-9]+(\.[0-9]+)?\) \[Computer software\]' ${file})"
+              if [ -n "${CITATION}" ]; then
+                  CITATION_VERSION="$(echo "${CITATION}" | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?')"
+                  CITATION_YEAR="$(echo "${CITATION}" | grep -oEi '[0-9]{4}')"
+                  [ "${BUILD_VERSION}" == "${CITATION_VERSION}" ] || (>&2 echo "${file}: Incorrect version in citation, found ${CITATION_VERSION} but expected ${BUILD_VERSION}"; exit -1)
+                  [ "${BUILD_YEAR}" == "${CITATION_YEAR}" ] || (>&2 echo "${file}: Incorrect year in citation, found ${CITATION_YEAR} but expected ${BUILD_YEAR}"; exit -1)
+              fi
+          done
+          
+          if [ -f docs/releaseNotes.md ]; then
+              LAST_RELEASE="$(grep -m 1 "## Version" docs/releaseNotes.md)"
+              LAST_RELEASE_VERSION="$(echo "${LAST_RELEASE}" | grep -oEi '[0-9]+\.[0-9]+(\.[0-9]+)?')"
+              [ "${BUILD_VERSION}" == "${LAST_RELEASE_VERSION}" ] || (>&2 echo "docs/releaseNotes.md: Incorrect version, found ${LAST_RELEASE_VERSION} but expected ${BUILD_VERSION}"; exit -1)
+          fi
