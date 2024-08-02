@@ -1,6 +1,22 @@
-name: Setup Build
-description: Sets up the runner in preparation for builds
+name: Setup Release
+description: Sets up the runner in preparation for release builds
 inputs:
+  email:
+    type: string
+    required: true
+    description: E-mail used when configuring Git, will appear in any commits
+  username:
+    type: string
+    required: true
+    description: User name used when configuring Git, will appear in any commits
+  github-pat:
+    type: string
+    required: true
+    description: PAT used to authenticate with GitHub when working across repos
+  gpg-signing-key:
+    type: string
+    required: true
+    description: GPG signing key for signing Maven artifacts
   java-distribution:
     type: choice
     required: true
@@ -34,13 +50,13 @@ runs:
         server-id: ossrh
         server-username: MAVEN_USERNAME
         server-password: MAVEN_PASSWORD
-        gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
+        gpg-private-key: ${{ inputs.gpg-signing-key }}
         gpg-passphrase: MAVEN_GPG_PASSPHRASE
     - name: Setup Git and GitHub CLI
       shell: bash
       run: |
         gh auth setup-git
-        git config --global user.email "${{ secrets.EMAIL }}"
-        git config --global user.name "${{ secrets.USERNAME }}"
+        git config --global user.email "${{ inputs.email }}"
+        git config --global user.name "${{ inputs.username }}"
       env:
-        GITHUB_TOKEN: ${{ secrets.PAT }}
+        GITHUB_TOKEN: ${{ inputs.github-pat }}
