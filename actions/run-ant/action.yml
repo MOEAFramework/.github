@@ -1,6 +1,11 @@
 name: Run Ant
 description: Runs an Ant target
 inputs:
+  directory:
+    type: string
+    description: Directory to run Ant
+    required: false
+    default: '.'
   target:
     type: string
     description: The Ant target
@@ -8,14 +13,30 @@ inputs:
     default: ''
   file:
     type: string
-    description: The Ant file
+    description: The Ant file, relative to the directory
     required: false
     default: build.xml
+  warning:
+    type: string
+    description: If set, will display this warning message instead of failing
+    required: false
+    default: ''
 runs:
   using: "composite"
   steps:
     - name: Run Ant target
       shell: bash
       run: |
-        ant -f ${{ inputs.file }} ${{ inputs.target }}
+        pushd ${{ inputs.directory }}
+
+        if [ -n "${{ inputs.warning }}" ]; then
+          ant_result=0
+          ant -f ${{ inputs.file }} ${{ inputs.target }} || ant_result=$?
+          if [ "$ant_result" -ne "0" ]; then
+            echo "::warning title=Warning::${{ inputs.warning }}"
+          fi
+        else
+          ant -f ${{ inputs.file }} ${{ inputs.target }}
+        fi
+        
         
