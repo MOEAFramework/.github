@@ -1,0 +1,20 @@
+name: Run Ant
+description: Runs an Ant target
+inputs:
+  target:
+    type: string
+    description: The Ant target
+    required: true
+  file:
+    type: string
+    description: The Ant file
+    required: false
+    default: build.xml
+runs:
+  using: "composite"
+  steps:
+    - name: Run Ant target
+      shell: bash
+      run: |
+        ant -f ${{ inputs.file }} ${{ inputs.target }}
+        
