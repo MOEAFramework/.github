@@ -29,9 +29,9 @@ runs:
     - name: Build and stage Maven artifacts
       shell: bash
       run: |
-          pushd ${{ inputs.directory }}
-          mvn --batch-mode deploy -Dmaven.test.skip=${{ inputs.skip-tests }}
-        env:
-          MAVEN_USERNAME: ${{ inputs.ossrh-username }}
-          MAVEN_PASSWORD: ${{ inputs.ossrh-token }}
-          MAVEN_GPG_PASSPHRASE: ${{ inputs.gpg-passphrase }}
+        pushd ${{ inputs.directory }}
+        mvn --batch-mode deploy -Dmaven.test.skip=${{ inputs.skip-tests }}
+      env:
+        MAVEN_USERNAME: ${{ inputs.ossrh-username }}
+        MAVEN_PASSWORD: ${{ inputs.ossrh-token }}
+        MAVEN_GPG_PASSPHRASE: ${{ inputs.gpg-passphrase }}
