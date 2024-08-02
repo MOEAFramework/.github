@@ -4,7 +4,8 @@ inputs:
   target:
     type: string
     description: The Ant target
-    required: true
+    required: false
+    default: ''
   file:
     type: string
     description: The Ant file
