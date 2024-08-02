@@ -2,7 +2,6 @@ name: Trigger Integration Tests
 description: Creates a PR in the IntegrationTests repo to run tests
 inputs:
   github-pat:
-    type: string
     required: true
     description: PAT used to authenticate with GitHub (requires cross-repo PAT)
 runs:
