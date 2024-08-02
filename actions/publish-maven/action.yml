@@ -33,5 +33,5 @@ runs:
         mvn --batch-mode deploy -Dmaven.test.skip=${{ inputs.skip-tests }}
       env:
         MAVEN_USERNAME: ${{ inputs.ossrh-username }}
-        MAVEN_PASSWORD: ${{ inputs.ossrh-token }}
+        MAVEN_PASSWORD: ${{ inputs.ossrh-password }}
         MAVEN_GPG_PASSPHRASE: ${{ inputs.gpg-passphrase }}
