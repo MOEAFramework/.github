@@ -1,7 +1,7 @@
 name: Get Project Build Info
 description: Populates several environment variables with the project name, version, etc.
 inputs:
-  skip_validation:
+  skip-validation:
     description: 'Skip version validations'
     default: false
     type: boolean
@@ -33,7 +33,7 @@ runs:
         echo "BUILD_YEAR=${BUILD_YEAR}" >> $GITHUB_ENV
         echo "BUILD_ARTIFACT=${BUILD_ARTIFACT}" >> $GITHUB_ENV
     - name: Validate project info
-      if: ${{ ! inputs.skip_validation }}
+      if: ${{ ! inputs.skip-validation }}
       shell: bash
       run: |
         echo "${BUILD_VERSION}" | grep -E '^[0-9]+\.[0-9]+(\.[0-9]+)?$' || (>&2 echo "Invalid version number format, found ${BUILD_VERSION}"; exit -1)
