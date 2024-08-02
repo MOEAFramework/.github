@@ -2,9 +2,11 @@ name: Get Project Build Info
 description: Populates several environment variables with the project name, version, etc.
 inputs:
   expected-version:
+    type: string
     description: 'Expected version number'
     default: ''
   skip-validation:
+    type: boolean
     description: 'Skip version validations'
     default: false
 runs:
