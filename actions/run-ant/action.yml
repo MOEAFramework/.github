@@ -2,22 +2,18 @@ name: Run Ant
 description: Runs an Ant target
 inputs:
   directory:
-    type: string
     description: Directory to run Ant
     required: false
     default: '.'
   target:
-    type: string
     description: The Ant target
     required: false
     default: ''
   file:
-    type: string
     description: The Ant file, relative to the directory
     required: false
     default: build.xml
   warning:
-    type: string
     description: If set, will display this warning message instead of failing
     required: false
     default: ''
