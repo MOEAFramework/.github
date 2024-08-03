@@ -2,7 +2,6 @@ name: Publish GitHub Release
 description: Stage a GitHub release
 inputs:
   github-token:
-    type: string
     required: true
     description: Token used to authenticate with GitHub
 runs:
