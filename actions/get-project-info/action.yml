@@ -45,7 +45,7 @@ runs:
         do
             MAVEN_DEPENDENCY="$(grep -oPisz '(?s)<dependency>.*</dependency>' ${file} | tr -d '\0' || echo '')"
             if [ -n "${MAVEN_DEPENDENCY}" ]; then
-                MAVEN_VERSION=$(echo "${MAVEN_DEPENDENCY}" | xmlstarlet sel -t -v "//dependency/version")
+                MAVEN_VERSION=$(echo "${MAVEN_DEPENDENCY}" | xmlstarlet sel -t -v "//dependency[artifactId='${BUILD_NAME}']/version")
                 [ "${BUILD_VERSION}" == "${MAVEN_VERSION}" ] || (>&2 echo "${file}: Incorrect version in dependency, found ${MAVEN_VERSION} but expected ${BUILD_VERSION}"; exit -1)
             fi
           
