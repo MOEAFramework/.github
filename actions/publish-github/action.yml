@@ -1,10 +1,10 @@
 name: Publish GitHub Release
 description: Stage a GitHub release
 inputs:
-  github-pat:
+  github-token:
     type: string
     required: true
-    description: PAT used to authenticate with GitHub (recommend using GITHUB_TOKEN)
+    description: Token used to authenticate with GitHub
 runs:
   using: "composite"
   steps:
@@ -19,4 +19,4 @@ runs:
             $([ -f "target/${BUILD_ARTIFACT}.jar" ] && echo "target/${BUILD_ARTIFACT}.jar" || echo "") \
             $([ -f "target/${BUILD_ARTIFACT}-jar-with-dependencies.jar" ] && echo "target/${BUILD_ARTIFACT}-jar-with-dependencies.jar" || echo "")
       env:
-        GITHUB_TOKEN: ${{ inputs.github-pat }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
