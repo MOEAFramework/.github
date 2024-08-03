@@ -41,21 +41,20 @@ runs:
       shell: bash
       run: |
         echo "${BUILD_VERSION}" | grep -E '^[0-9]+\.[0-9]+(\.[0-9]+)?$' > /dev/null || (>&2 echo "Invalid version number format, found ${BUILD_VERSION}"; exit -1)
-        
         [ -z "${{ inputs.expected-version }}" ] || [ "${{ inputs.expected-version }}" == "${BUILD_VERSION}" ] || (>&2 echo "Project version does not match expected value, found ${BUILD_VERSION} but expected ${{ inputs.expected-version }}"; exit -1)
 
         find . -name "*.md" -print0 | while read -d $'\0' file
         do
-            MAVEN_DEPENDENCY="$(grep -oPisz '(?s)<dependency>.*</dependency>' ${file} | tr -d '\0')"
+            MAVEN_DEPENDENCY="$(grep -oPisz '(?s)<dependency>.*</dependency>' ${file} | tr -d '\0' || echo '')"
             if [ -n "${MAVEN_DEPENDENCY}" ]; then
                 MAVEN_VERSION=$(echo "${MAVEN_DEPENDENCY}" | xmlstarlet sel -t -v "//dependency/version")
                 [ "${BUILD_VERSION}" == "${MAVEN_VERSION}" ] || (>&2 echo "${file}: Incorrect version in dependency, found ${MAVEN_VERSION} but expected ${BUILD_VERSION}"; exit -1)
             fi
           
-            MAVEN_URL_VERSION="$(grep -oEis 'https://search.maven.org/.*/[0-9]+\.[0-9]+(\.[0-9]+)?/' ${file} | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?')"
+            MAVEN_URL_VERSION="$(grep -oEis 'https://search.maven.org/.*/[0-9]+\.[0-9]+(\.[0-9]+)?/' ${file} | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?' || echo '')"
             [ -z "${MAVEN_URL_VERSION}" ] || [ "${BUILD_VERSION}" == "${MAVEN_URL_VERSION}" ] || (>&2 echo "${file}: Incorrect version in url, found ${MAVEN_URL_VERSION} but expected ${BUILD_VERSION}"; exit -1)
           
-            CITATION="$(grep -Eis '\(Version [0-9]+\.[0-9]+(\.[0-9]+)?\) \[Computer software\]' ${file})"
+            CITATION="$(grep -Eis '\(Version [0-9]+\.[0-9]+(\.[0-9]+)?\) \[Computer software\]' ${file} || echo '')"
             if [ -n "${CITATION}" ]; then
                 CITATION_VERSION="$(echo "${CITATION}" | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?')"
                 CITATION_YEAR="$(echo "${CITATION}" | grep -oEi '[0-9]{4}')"
