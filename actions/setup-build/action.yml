@@ -16,7 +16,7 @@ inputs:
   python-version:
     required: false
     description: Python version to install
-    default: 3.10 # 3.12 removes distutils which may be required by some dependencies
+    default: '3.10' # 3.12 removes distutils which may be required by some dependencies
   python-dependencies:
     required: false
     description: Optional Python dependencies to install
