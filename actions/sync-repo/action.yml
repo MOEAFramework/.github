@@ -23,10 +23,10 @@ inputs:
     required: false
     description: The commit message used if there are any changes
     default: Syncing repository
-  github-pat:
+  github-token:
     type: string
     required: true
-    description: PAT used to authenticate with GitHub (requires cross-repo PAT)
+    description: Token used to authenticate with GitHub (requires cross-repo permissions)
 runs:
   using: "composite"
   steps:
@@ -50,4 +50,4 @@ runs:
           gh pr create --head ${{ inputs.branch-name }} --fill --repo ${{ inputs.organization }}/${{ inputs.repository }} || true
         fi
       env:
-        GITHUB_TOKEN: ${{ inputs.github-pat }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
