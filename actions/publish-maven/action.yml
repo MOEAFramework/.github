@@ -2,25 +2,20 @@ name: Publish Maven
 description: Build and stage Maven artifacts
 inputs:
   directory:
-    type: string
     description: Root directory for the Maven project
     required: false
     default: '.'
   skip-tests:
-    type: boolean
     description: Skip running Maven tests before deploy
     required: false
     default: false
   ossrh-username:
-    type: string
     description: Username for authenticating with OSSRH
     required: true
   ossrh-password:
-    type: string
     description: Password for authenticating with OSSRH
     required: true
   gpg-passphrase:
-    type: string
     description: Passphrase for accessing the GPG signing key
     required: true
 runs:
