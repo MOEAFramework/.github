@@ -1,0 +1,43 @@
+name: Reusable Maven CI
+
+on:
+  workflow_call:
+    inputs:
+      java-distribution:
+        type: choice
+        required: true
+        description: Java distribution
+        options:
+          - 'zulu'
+          - 'temurin'
+          - 'oracle'
+        default: 'zulu'
+      minimum-java-version:
+        type: choice
+        required: false
+        description: Minimum Java version
+        options:
+          - '17'
+          - '18'
+          - '19'
+          - '20'
+          - '21'
+          - '22'
+        default: '17'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ '17', '18', '19', '20', '21', '22' ]
+    if: ${{ matrix.java >= inputs.minimum-java-version }}
+    steps:
+      - name: Setup build
+        uses: MOEAFramework/.github/actions/setup-build@main
+        with:
+          java-version: ${{ matrix.java }}
+          java-distribution: ${{ inputs.java-distribution }}
+      - name: Run tests
+        run: mvn test
