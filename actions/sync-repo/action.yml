@@ -33,13 +33,15 @@ runs:
     - name: Sync repo
       shell: bash
       run: |
+        directory=$(readlink -f ${{ inputs.directory }})
+      
         pushd ..
         gh repo clone ${{ inputs.organization }}/${{ inputs.repository }}
         pushd ${{ inputs.repository }}
         git checkout ${{ inputs.branch-name }} || git checkout -b ${{ inputs.branch-name }}
           
         rm -rf *
-        cp -R ${{ inputs.directory }}/* .
+        cp -R ${directory}/* .
         git add .
           
         if [[ -n "$(git status -s)" ]]; then
