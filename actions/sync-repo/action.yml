@@ -1,0 +1,51 @@
+name: Sync Repo
+description: Syncs a repository with a local folder
+inputs:
+  directory:
+    type: string
+    required: true
+    description: The local folder containing the new content
+  organization:
+    type: string
+    required: false
+    description: The organization name
+    default: MOEAFramework
+  repository:
+    type: string
+    required: true
+    description: The repository name
+  branch-name:
+    type: string
+    required: true
+    description: The name of the branch used to push any changes
+  message:
+    type: string
+    required: false
+    description: The commit message used if there are any changes
+    default: Syncing repository
+  github-pat:
+    type: string
+    required: true
+    description: PAT used to authenticate with GitHub (requires cross-repo PAT)
+runs:
+  using: "composite"
+  steps:
+    - name: Sync repo
+      shell: bash
+      run: |
+        pushd ..
+        gh repo clone ${{ inputs.organization }}/${{ inputs.repository }}
+        pushd ${{ inputs.repository }}
+        git checkout ${{ inputs.branch-name }} || git checkout -b ${{ inputs.branch-name }}
+          
+        rm -rf *
+        cp -R ${{ inputs.directory }}/* .
+        git add .
+          
+        if [[ -n "$(git status -s)" ]]; then
+          git commit -m "${{ inputs.message }}"
+          git push origin ${{ inputs.branch-name }}
+          gh pr create --head ${{ inputs.branch-name }} --fill --repo ${{ inputs.organization }}/${{ inputs.repository }} || true
+        fi
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-pat }}
