@@ -29,14 +29,14 @@ runs:
       run: |
         pushd ${{ inputs.directory }}
 
-        if [ -n "${{ inputs.warning }}" ]; then
-          ant_result=0
-          ant -f ${{ inputs.file }} ${{ inputs.target }} || ant_result=$?
-          if [ "$ant_result" -ne "0" ]; then
+        ant_result=0
+        ant -f ${{ inputs.file }} ${{ inputs.target }} || ant_result=$?
+          
+        if [ "$ant_result" -ne "0" ]; then
+          if [ -n "${{ inputs.warning }}" ]; then
             echo "::warning title=Warning::${{ inputs.warning }}"
+          else
+            exit $ant_result
           fi
-        else
-          ant -f ${{ inputs.file }} ${{ inputs.target }}
         fi
-        
         
