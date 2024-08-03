@@ -2,29 +2,23 @@ name: Sync Repo
 description: Syncs a repository with a local folder
 inputs:
   directory:
-    type: string
     required: true
     description: The local folder containing the new content
   organization:
-    type: string
     required: false
     description: The organization name
     default: MOEAFramework
   repository:
-    type: string
     required: true
     description: The repository name
   branch-name:
-    type: string
     required: true
     description: The name of the branch used to push any changes
   message:
-    type: string
     required: false
     description: The commit message used if there are any changes
     default: Syncing repository
   github-token:
-    type: string
     required: true
     description: Token used to authenticate with GitHub (requires cross-repo permissions)
 runs:
