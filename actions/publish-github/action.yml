@@ -1,6 +1,9 @@
 name: Publish GitHub Release
-description: Stage a GitHub release
+description: Stage a GitHub release including any Maven or Ant release artifacts
 inputs:
+  release-notes-file:
+    required: false
+    description: The file containing release notes (note this must follow our release note format)
   github-token:
     required: true
     description: Token used to authenticate with GitHub
@@ -10,8 +13,13 @@ runs:
     - name: Stage GitHub release
       shell: bash
       run: |
+        if [ -n "${{ inputs.release-notes-file }}" ]; then
+          cat "${{ inputs.release-notes-file }}" | awk '/## Version ${BUILD_VERSION}/{flag=1; next} /##/{flag=0} flag' > generatedReleaseNotes.md
+          [ "$(wc -l < generatedReleaseNotes.md)" -gt 0 ] || (>&2 echo "Unable to read release notes from ${{ inputs.release-notes-file }}"; exit -1)
+        fi
+        
         gh release create "v${BUILD_VERSION}" --draft --title "Version ${BUILD_VERSION}" \
-            $([ -f "dist/releaseNotes.md" ] && echo "--notes-file dist/releaseNotes.md" || echo "") \
+            $([ -f "generatedReleaseNotes.md" ] && echo "--notes-file generatedReleaseNotes.md" || echo "") \
             $([ -f "dist/MOEAFramework-${BUILD_VERSION}.tar.gz" ] && echo "dist/MOEAFramework-${BUILD_VERSION}.tar.gz" || echo "") \
             $([ -f "dist/MOEAFramework-${BUILD_VERSION}-Demo.jar" ] && echo "dist/MOEAFramework-${BUILD_VERSION}-Demo.jar" || echo "") \
             $([ -f "dist/MOEAFramework-${BUILD_VERSION}-Source.tar.gz" ] && echo "dist/MOEAFramework-${BUILD_VERSION}-Source.tar.gz" || echo "") \
