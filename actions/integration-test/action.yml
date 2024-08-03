@@ -2,7 +2,6 @@ name: Trigger Integration Tests
 description: Creates a PR in the IntegrationTests repo to run tests
 inputs:
   github-token:
-    type: string
     required: true
     description: Token used to authenticate with GitHub (requires cross-repo permissions)
 runs:
