@@ -25,7 +25,7 @@ runs:
       shell: bash
       run: |
         pushd ${{ inputs.directory }}
-        mvn --batch-mode deploy -Dmaven.test.skip=${{ inputs.skip-tests }}
+        mvn --batch-mode deploy -Dmaven.test.skip=${{ inputs.skip-tests || 'false' }}
       env:
         MAVEN_USERNAME: ${{ inputs.ossrh-username }}
         MAVEN_PASSWORD: ${{ inputs.ossrh-password }}
