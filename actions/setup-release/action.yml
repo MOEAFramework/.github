@@ -9,10 +9,10 @@ inputs:
     type: string
     required: true
     description: User name used when configuring Git, will appear in any commits
-  github-pat:
+  github-token:
     type: string
     required: true
-    description: PAT used to authenticate with GitHub (recommend GITHUB_TOKEN for local or PAT for cross-repo)
+    description: Token used to authenticate with GitHub (requires cross-repo permissions)
   gpg-signing-key:
     type: string
     required: true
@@ -60,4 +60,4 @@ runs:
         git config --global user.email "${{ inputs.email }}"
         git config --global user.name "${{ inputs.username }}"
       env:
-        GITHUB_TOKEN: ${{ inputs.github-pat }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
