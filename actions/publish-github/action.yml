@@ -4,6 +4,9 @@ inputs:
   release-notes-file:
     required: false
     description: The file containing release notes (note this must follow our release note format)
+  extra-files:
+    required: false
+    description: Extra files to include in the release
   github-token:
     required: true
     description: Token used to authenticate with GitHub
@@ -20,6 +23,7 @@ runs:
         
         gh release create "v${BUILD_VERSION}" --draft --title "Version ${BUILD_VERSION}" \
             $([ -f "generatedReleaseNotes.md" ] && echo "--notes-file generatedReleaseNotes.md" || echo "") \
+            $([ -n "${{ inputs.extra-files }}" ] && echo "${{ inputs.extra-files }}" || echo "") \
             $([ -f "dist/MOEAFramework-${BUILD_VERSION}.tar.gz" ] && echo "dist/MOEAFramework-${BUILD_VERSION}.tar.gz" || echo "") \
             $([ -f "dist/MOEAFramework-${BUILD_VERSION}-Demo.jar" ] && echo "dist/MOEAFramework-${BUILD_VERSION}-Demo.jar" || echo "") \
             $([ -f "dist/MOEAFramework-${BUILD_VERSION}-Source.tar.gz" ] && echo "dist/MOEAFramework-${BUILD_VERSION}-Source.tar.gz" || echo "") \
