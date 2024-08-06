@@ -18,8 +18,8 @@ runs:
       shell: bash
       run: |
         if [ -f META-INF/build.properties ]; then
-            BUILD_NAME=$(cat META-INF/build.properties | awk '{split($0,a," = "); if (a[1]=="shortname") print tolower(a[2])}' |  tr -d '[:space:]')
-            BUILD_VERSION=$(cat META-INF/build.properties | awk '{split($0,a," = "); if (a[1]=="version") print tolower(a[2])}' |  tr -d '[:space:]')
+            BUILD_NAME=$(cat META-INF/build.properties | awk '{split($0,a,/\s*=\s*/); if (a[1]=="shortname") print tolower(a[2])}' | tr -d '[:space:]')
+            BUILD_VERSION=$(cat META-INF/build.properties | awk '{split($0,a,/\s*=\s*/); if (a[1]=="version") print tolower(a[2])}' | tr -d '[:space:]')
         elif [ -f pom.xml ]; then
             BUILD_NAME=$(xmlstarlet sel -N x="http://maven.apache.org/POM/4.0.0" -t -v "//x:project/x:artifactId/text()" pom.xml)
             BUILD_VERSION=$(xmlstarlet sel -N x="http://maven.apache.org/POM/4.0.0" -t -v "//x:project/x:version/text()" pom.xml)
