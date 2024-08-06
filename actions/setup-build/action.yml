@@ -61,7 +61,7 @@ runs:
         gpg-private-key: ${{ inputs.gpg-signing-key }}
         gpg-passphrase: MAVEN_GPG_PASSPHRASE
     - name: Clean up Java executables
-      if ${{ runner.os == 'linux' }}
+      if: ${{ runner.os == 'linux' }}
       shell: bash
       run: |
         # setup-java installs to /opt/hostedtoolcache/ and prefixes this to $PATH, but there are other versions
