@@ -60,6 +60,16 @@ runs:
         server-password: MAVEN_PASSWORD
         gpg-private-key: ${{ inputs.gpg-signing-key }}
         gpg-passphrase: MAVEN_GPG_PASSPHRASE
+    - name: Clean up Java executables
+      if ${{ runner.os == 'linux' }}
+      shell: bash
+      run: |
+        # setup-java installs to /opt/hostedtoolcache/ and prefixes this to $PATH, but there are other versions
+        # of Java accessible from /usr/bin/.  To avoid falling through to these older versions, remove the links.
+        rm /usr/bin/java
+        rm /usr/bin/javac
+        rm /usr/bin/javah
+        rm /usr/bin/javadoc
     - name: Set up Git and GitHub CLI
       if: ${{ inputs.setup-git == 'true' }}
       shell: bash
