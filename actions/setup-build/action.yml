@@ -29,6 +29,10 @@ inputs:
     required: false
     description: Fortran version to install
     default: '13'
+  setup-matlab:
+    required: false
+    description: If true, will install Matlab
+    default: false
   setup-git:
     required: false
     description: If true, will set up authentication for Git
