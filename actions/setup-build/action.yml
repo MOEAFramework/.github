@@ -58,7 +58,7 @@ runs:
       with:
         java-version: ${{ inputs.java-version || '17' }}
         distribution: ${{ inputs.java-distribution || 'zulu' }}
-        server-id: ossrh
+        server-id: ossrh-snapshot
         server-username: MAVEN_USERNAME
         server-password: MAVEN_PASSWORD
         gpg-private-key: ${{ inputs.gpg-signing-key }}
