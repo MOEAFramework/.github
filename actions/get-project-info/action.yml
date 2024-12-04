@@ -34,6 +34,10 @@ runs:
         echo "BUILD_VERSION=${BUILD_VERSION}" >> $GITHUB_ENV
         echo "BUILD_YEAR=${BUILD_YEAR}" >> $GITHUB_ENV
         echo "BUILD_ARTIFACT=${BUILD_ARTIFACT}" >> $GITHUB_ENV
+
+        if echo "${BUILD_VERSION}" | grep -i ".*-SNAPSHOT" > /dev/null; then
+          echo "IS_SNAPSHOT=true" >> $GITHUB_ENV
+        fi
     - name: Validate project info
       if: ${{ inputs.skip-validation != 'true' }}
       shell: bash
