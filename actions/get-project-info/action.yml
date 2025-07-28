@@ -7,11 +7,11 @@ runs:
       shell: bash
       run: |
         if [ -f META-INF/build.properties ]; then
-            BUILD_NAME=$(sed -En 's=.*shortname[ ]*\=[ ]*(.*)[ ]*=\1=p' META-INF/build.properties | head -n 1 | tr '[:upper:]' '[:lower:]')
-            BUILD_VERSION=$(sed -En 's=.*version[ ]*\=[ ]*(.*)[ ]*=\1=p' META-INF/build.properties | head -n 1)
+            BUILD_NAME=$(sed -En 's=.*shortname[ ]*\=[ ]*(.*)[ ]*=\1=p' META-INF/build.properties | head -n 1 | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')
+            BUILD_VERSION=$(sed -En 's=.*version[ ]*\=[ ]*(.*)[ ]*=\1=p' META-INF/build.properties | head -n 1 | tr -d '[:space:]')
         elif [ -f pom.xml ]; then
-            BUILD_NAME=$(sed -En 's=.*<artifactId>(.*)</artifactId>.*=\1=p' pom.xml | head -n 1)
-            BUILD_VERSION=$(sed -En 's=.*<version>(.*)</version>.*=\1=p' pom.xml | head -n 1)
+            BUILD_NAME=$(sed -En 's=.*<artifactId>(.*)</artifactId>.*=\1=p' pom.xml | head -n 1 | tr -d '[:space:]')
+            BUILD_VERSION=$(sed -En 's=.*<version>(.*)</version>.*=\1=p' pom.xml | head -n 1) | tr -d '[:space:]'
         fi
           
         [ -n "${BUILD_NAME}" ] || (>&2 echo "Failed to detect BUILD_NAME"; exit -1)
